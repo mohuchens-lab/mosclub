@@ -81,6 +81,7 @@ function scatter(n, rows, cols, layer) {
 const LAYOUTS = [
   {
     name: '金字塔',
+    tileColor: 'linear-gradient(145deg, #f0dbb0 0%, #e0c890 100%)',
     generate() {
       const tiles = [
         ...rect(6, 6, 0),
@@ -93,22 +94,23 @@ const LAYOUTS = [
   },
   {
     name: '钻石',
+    tileColor: 'linear-gradient(145deg, #f2d4d7 0%, #e0b8bc 100%)',
     generate() {
       const tiles = [
-        ...diamond(3, 0),  // 25
-        ...diamond(2, 1),  // 13
-        ...diamond(1, 2),  // 5
-        ...diamond(0, 3),  // 1
+        ...diamond(3, 0),
+        ...diamond(2, 1),
+        ...diamond(1, 2),
+        ...diamond(0, 3),
       ];
-      // 44 → pad to 54
       return { tiles: padTiles(tiles, 54, 3), maxExtent: 7 };
     }
   },
   {
     name: '十字架',
+    tileColor: 'linear-gradient(145deg, #d8e8d0 0%, #b8d0a8 100%)',
     generate() {
       const tiles = [
-        ...cross(3, 2, 0),  // 7×7 with arm=2
+        ...cross(3, 2, 0),
         ...cross(2, 1, 1),
         ...cross(1, 1, 2),
       ];
@@ -117,6 +119,7 @@ const LAYOUTS = [
   },
   {
     name: '圆环',
+    tileColor: 'linear-gradient(145deg, #d4ddf0 0%, #b0c0e0 100%)',
     generate() {
       const tiles = [
         ...circle(3, 0),
@@ -128,6 +131,7 @@ const LAYOUTS = [
   },
   {
     name: '散落',
+    tileColor: 'linear-gradient(145deg, #e4d6f0 0%, #ccb8e0 100%)',
     generate() {
       const tiles = [
         ...scatter(28, 8, 8, 0),
@@ -136,12 +140,12 @@ const LAYOUTS = [
         ...scatter(8, 5, 5, 3),
         ...scatter(2, 3, 3, 4),
       ];
-      // 28+20+14+8+2 = 72
       return { tiles, maxExtent: 8 };
     }
   },
   {
     name: '双塔',
+    tileColor: 'linear-gradient(145deg, #f2dcc8 0%, #e0c4a8 100%)',
     generate() {
       const left = (r, c, l) => ({ r: r + l, c: c, layer: l });
       const right = (r, c, l) => ({ r: r + l, c: c + 5, layer: l });
@@ -301,6 +305,7 @@ function renderBoard() {
     el.style.left = left + 'px';
     el.style.top = top + 'px';
     el.style.zIndex = tile.layer * 100 + tile.row * 10 + tile.col;
+    el.style.background = currentLayout.tileColor;
 
     const icon = document.createElement('span');
     icon.className = 'tile-icon';
