@@ -208,7 +208,7 @@ let processing = false;
 let currentLayout = null;
 let gameId = 0;                   // incremented each new game; stale ops bail
 let boardEl, barEl, remainingEl, overlayEl, titleEl;
-let tileSize = 0, offsetX = 0, offsetY = 0, maxExtent = 0;
+let tileSize = 0, offsetX = 0, offsetY = 0;
 
 function init() {
   boardEl = document.getElementById('board');
@@ -235,7 +235,7 @@ function generateTiles() {
   // Pick random layout
   const layout = LAYOUTS[Math.floor(Math.random() * LAYOUTS.length)];
   currentLayout = layout;
-  const { tiles: positions, maxExtent: me } = layout.generate();
+  const { tiles: positions } = layout.generate();
 
   const total = positions.length;
   numTypes = pickTypeCount(total);
@@ -258,7 +258,6 @@ function generateTiles() {
     layer: pos.layer,
   }));
 
-  maxExtent = me;
   titleEl.textContent = '布局：' + layout.name;
 }
 
@@ -286,13 +285,29 @@ function tilesOverlap(a, b) {
 function renderAll() {
   const boardW = boardEl.clientWidth;
   const boardH = boardEl.clientHeight;
-  tileSize = Math.floor(Math.min(boardW / maxExtent, boardH / maxExtent));
 
-  // Center tiles within board
-  const usedW = maxExtent * tileSize;
-  const usedH = maxExtent * tileSize;
-  offsetX = Math.floor((boardW - usedW) / 2);
-  offsetY = Math.floor((boardH - usedH) / 2);
+  // Scan actual tile extent (including layer offset)
+  let minX = Infinity, maxX = -Infinity;
+  let minY = Infinity, maxY = -Infinity;
+  for (const t of tiles) {
+    const x = t.col + t.layer * 0.5;
+    const y = t.row + t.layer * 0.5;
+    if (x < minX) minX = x;
+    if (x > maxX) maxX = x;
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  const contentW = maxX - minX + 1;
+  const contentH = maxY - minY + 1;
+
+  // Scale to fill board, keeping tiles as large as possible
+  tileSize = Math.floor(Math.min(boardW / contentW, boardH / contentH));
+
+  // Center the actual content
+  const usedW = contentW * tileSize;
+  const usedH = contentH * tileSize;
+  offsetX = Math.floor((boardW - usedW) / 2) - Math.floor(minX * tileSize);
+  offsetY = Math.floor((boardH - usedH) / 2) - Math.floor(minY * tileSize);
 
   renderBoard();
   renderBar();
