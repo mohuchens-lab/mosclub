@@ -77,88 +77,101 @@ function scatter(n, rows, cols, layer) {
 }
 
 // ── Layout definitions ────────────
+// All layouts target 216 tiles (12 types × 18 each = 6 clears/type)
 
 const LAYOUTS = [
   {
     name: '金字塔',
-    tileColor: 'linear-gradient(145deg, #f0dbb0 0%, #e0c890 100%)',
+    tileColor: 'linear-gradient(145deg, #a8d8c8 0%, #7ab898 100%)',
     generate() {
       const tiles = [
-        ...rect(6, 6, 0),
-        ...rect(5, 5, 1),
-        ...rect(4, 4, 2),
-        ...rect(2, 2, 3),
+        ...rect(10, 10, 0),
+        ...rect(8, 8, 1),
+        ...rect(6, 6, 2),
+        ...rect(4, 4, 3),
       ];
-      return { tiles, maxExtent: 6 };
+      return { tiles, maxExtent: 12 };
     }
   },
   {
     name: '钻石',
-    tileColor: 'linear-gradient(145deg, #f2d4d7 0%, #e0b8bc 100%)',
+    tileColor: 'linear-gradient(145deg, #c0ddf0 0%, #90bcd8 100%)',
     generate() {
       const tiles = [
-        ...diamond(3, 0),
-        ...diamond(2, 1),
-        ...diamond(1, 2),
-        ...diamond(0, 3),
+        ...diamond(6, 0),
+        ...diamond(5, 1),
+        ...diamond(4, 2),
+        ...diamond(3, 3),
       ];
-      return { tiles: padTiles(tiles, 54, 3), maxExtent: 7 };
+      return { tiles: padTiles(tiles, 216, 3), maxExtent: 15 };
     }
   },
   {
     name: '十字架',
-    tileColor: 'linear-gradient(145deg, #d8e8d0 0%, #b8d0a8 100%)',
+    tileColor: 'linear-gradient(145deg, #b0d0b8 0%, #80a888 100%)',
     generate() {
       const tiles = [
-        ...cross(3, 2, 0),
-        ...cross(2, 1, 1),
-        ...cross(1, 1, 2),
+        ...cross(5, 3, 0),
+        ...cross(4, 2, 1),
+        ...cross(3, 2, 2),
+        ...cross(2, 1, 3),
+        ...cross(1, 1, 4),
       ];
-      return { tiles: padTiles(tiles, 72, 3), maxExtent: 7 };
+      return { tiles: padTiles(tiles, 216, 4), maxExtent: 14 };
     }
   },
   {
     name: '圆环',
-    tileColor: 'linear-gradient(145deg, #d4ddf0 0%, #b0c0e0 100%)',
+    tileColor: 'linear-gradient(145deg, #c0c8e8 0%, #9098c8 100%)',
     generate() {
       const tiles = [
-        ...circle(3, 0),
-        ...circle(2, 1),
-        ...circle(1, 2),
+        ...circle(5, 0),
+        ...circle(4, 1),
+        ...circle(3, 2),
+        ...circle(2, 3),
+        ...circle(1, 4),
       ];
-      return { tiles: padTiles(tiles, 54, 3), maxExtent: 7 };
+      return { tiles: padTiles(tiles, 216, 4), maxExtent: 13 };
     }
   },
   {
     name: '散落',
-    tileColor: 'linear-gradient(145deg, #e4d6f0 0%, #ccb8e0 100%)',
+    tileColor: 'linear-gradient(145deg, #c8bcd8 0%, #a894c0 100%)',
     generate() {
       const tiles = [
-        ...scatter(28, 8, 8, 0),
-        ...scatter(20, 7, 7, 1),
-        ...scatter(14, 6, 6, 2),
-        ...scatter(8, 5, 5, 3),
-        ...scatter(2, 3, 3, 4),
+        ...scatter(42, 11, 11, 0),
+        ...scatter(38, 10, 10, 1),
+        ...scatter(34, 9, 9, 2),
+        ...scatter(30, 8, 8, 3),
+        ...scatter(26, 7, 7, 4),
+        ...scatter(24, 6, 6, 5),
+        ...scatter(22, 5, 5, 6),
       ];
-      return { tiles, maxExtent: 8 };
+      return { tiles, maxExtent: 14 };
     }
   },
   {
     name: '双塔',
-    tileColor: 'linear-gradient(145deg, #f2dcc8 0%, #e0c4a8 100%)',
+    tileColor: 'linear-gradient(145deg, #b8ccc8 0%, #88a8a0 100%)',
     generate() {
-      const left = (r, c, l) => ({ r: r + l, c: c, layer: l });
-      const right = (r, c, l) => ({ r: r + l, c: c + 5, layer: l });
-      const tiles = [];
-      for (let l = 0; l < 4; l++) {
-        const sz = 4 - l;
+      const tower = (baseR, baseC, sz, l) => {
+        const out = [];
         for (let r = 0; r < sz; r++)
-          for (let c = 0; c < sz; c++) {
-            tiles.push(left(r, c, l));
-            tiles.push(right(r, c, l));
-          }
-      }
-      return { tiles: padTiles(tiles, 72, 4), maxExtent: 10 };
+          for (let c = 0; c < sz; c++)
+            out.push({ r: baseR + r, c: baseC + c, layer: l });
+        return out;
+      };
+      const tiles = [
+        ...tower(0, 0, 7, 0),
+        ...tower(0, 8, 7, 0),
+        ...tower(1, 1, 5, 1),
+        ...tower(1, 9, 5, 1),
+        ...tower(2, 2, 4, 2),
+        ...tower(2, 10, 4, 2),
+        ...tower(3, 3, 2, 3),
+        ...tower(3, 11, 2, 3),
+      ];
+      return { tiles: padTiles(tiles, 216, 3), maxExtent: 17 };
     }
   },
 ];
@@ -166,11 +179,10 @@ const LAYOUTS = [
 // ── Utility ────────────────────────
 
 function padTiles(tiles, target, topLayer) {
-  const current = tiles.length;
-  const diff = target - current;
+  const diff = target - tiles.length;
   if (diff <= 0) return tiles;
-  // Place padding tiles one layer above the design, out of the way
-  const extra = scatter(diff, 5, 5, topLayer + 1);
+  const side = Math.ceil(Math.sqrt(diff));
+  const extra = scatter(diff, side, side, topLayer + 1);
   return [...tiles, ...extra];
 }
 
