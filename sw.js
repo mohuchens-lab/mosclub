@@ -1,4 +1,4 @@
-const CACHE = 'sheep-game-v2';
+const CACHE = 'sheep-game-v3';
 
 self.addEventListener('install', e => {
   e.waitUntil(
