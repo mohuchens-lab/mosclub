@@ -1,6 +1,6 @@
 {
-  "name": "羊了个羊 - 消消乐",
-  "short_name": "消消乐",
+  "name": "log写的消消乐",
+  "short_name": "log消消乐",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#1a6b3c",

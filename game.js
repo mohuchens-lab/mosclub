@@ -143,7 +143,6 @@ const LAYOUTS = [
   {
     name: '双塔',
     generate() {
-      // Two offset pyramids side by side
       const left = (r, c, l) => ({ r: r + l, c: c, layer: l });
       const right = (r, c, l) => ({ r: r + l, c: c + 5, layer: l });
       const tiles = [];
@@ -155,7 +154,6 @@ const LAYOUTS = [
             tiles.push(right(r, c, l));
           }
       }
-      // 2 × (16+9+4+1) = 60
       return { tiles: padTiles(tiles, 72, 4), maxExtent: 10 };
     }
   },
@@ -201,7 +199,7 @@ function init() {
   barEl = document.getElementById('bar');
   remainingEl = document.getElementById('remaining');
   overlayEl = document.getElementById('overlay');
-  titleEl = document.getElementById('title');
+  titleEl = document.getElementById('layout-name');
   document.getElementById('new-game').addEventListener('click', newGame);
   document.getElementById('overlay-btn').addEventListener('click', newGame);
   newGame();
@@ -245,7 +243,7 @@ function generateTiles() {
   }));
 
   maxExtent = me;
-  titleEl.textContent = '🐑 ' + layout.name;
+  titleEl.textContent = '布局：' + layout.name;
 }
 
 // ── Blocking ────────────────────────
